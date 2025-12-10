@@ -5,6 +5,7 @@ import PrivateRoute from './PrivateRoute';
 import Register from '../Pages/Register';
 import Login from '../Pages/Login';
 import AllLoans from '../Pages/AllLoans';
+import LoanDetails from '../Pages/LoanDetails';
 
 const router = createBrowserRouter([
     {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
             path: "/all-loans",
             element: <AllLoans></AllLoans>
         },
+        {
+            path: "/loan/:id",
+            element: <LoanDetails></LoanDetails>,
+        }
         ]
     }
 ])
