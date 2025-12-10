@@ -3,11 +3,12 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../context/AuthContext';
 import axiosSecure from '../services/axiosSecure';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Register = () => {
     const [error, setError] = useState("");
 
-    const {createUser} = useAuth();
+    const { createUser } = useAuth();
 
     const navigate = useNavigate();
 
@@ -29,19 +30,31 @@ const Register = () => {
             );
         }
 
-        try{
-            await createUser(email, password);
+        try {
+            await createUser(email, password, name, photoURL);
 
             await axiosSecure.post("/users", {
                 name,
                 email,
                 photoURL,
                 role,
-                status : "active",
+                status: "active",
             });
 
-            navigate("/login")
-        } catch(err){
+            Swal.fire({
+                icon: "success",
+                title: "Registration Successful!",
+                text: "Your account has been created 🎉",
+                confirmButtonText: "Go to Login",
+            }).then((result) => {
+                if(result.isConfirmed){
+                    navigate("/login");
+                }
+            });
+
+
+
+        } catch (err) {
             setError(err.message || "Registration failed")
         }
     };

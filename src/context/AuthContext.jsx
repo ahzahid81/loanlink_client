@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../services/firebaseConfig";
 import axiosSecure from "../services/axiosSecure";
@@ -15,10 +15,16 @@ const AuthProvider = ({ children }) => {
     const [role, setRole] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const createUser = async (email, password) => {
+    const createUser = async (email, password, name, photoURL) => {
         setLoading(true);
         try{
-            return await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, {
+                displayName: name,
+                photoURL: photoURL,
+            });
+
+            return userCredential;
         }
         catch(err){
             setLoading(false);
