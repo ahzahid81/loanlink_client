@@ -6,6 +6,7 @@ import Register from '../Pages/Register';
 import Login from '../Pages/Login';
 import AllLoans from '../Pages/AllLoans';
 import LoanDetails from '../Pages/LoanDetails';
+import ApplyLoan from '../Pages/ApplyLoan';
 
 const router = createBrowserRouter([
     {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
         {
             path: "/loan/:id",
             element: <LoanDetails></LoanDetails>,
+        },
+        {
+            path: "/apply/:id",
+            element: <ApplyLoan></ApplyLoan>,
         }
         ]
     }
