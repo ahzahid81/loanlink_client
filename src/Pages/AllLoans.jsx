@@ -1,134 +1,156 @@
-import React from "react";
+// src/Pages/AllLoans.jsx
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import axiosSecure from "../services/axiosSecure";
+
+const PAGE_LIMIT = 9;
+
+// ✅ Correct queryFn (TanStack v5)
+const fetchLoans = async () => {
+  const res = await axiosSecure.get("/loans");
+  return res.data;
+};
 
 const AllLoans = () => {
-  // TODO: later replace this with real data from backend
-  const demoLoans = [
-    {
-      _id: "demo-1",
-      title: "Small Business Starter Loan",
-      category: "Business",
-      interest: 8.5,
-      maxLimit: 5000,
-      image:
-        "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg", // or any placeholder
-    },
-    {
-      _id: "demo-2",
-      title: "Agriculture Support Loan",
-      category: "Agriculture",
-      interest: 7.2,
-      maxLimit: 3000,
-      image:
-        "https://images.pexels.com/photos/219794/pexels-photo-219794.jpeg",
-    },
-    {
-      _id: "demo-3",
-      title: "Education Microloan",
-      category: "Education",
-      interest: 6.9,
-      maxLimit: 2000,
-      image:
-        "https://images.pexels.com/photos/301926/pexels-photo-301926.jpeg",
-    },
-    {
-      _id: "demo-4",
-      title: "Women Entrepreneur Loan",
-      category: "Women Empowerment",
-      interest: 7.9,
-      maxLimit: 4000,
-      image:
-        "https://images.pexels.com/photos/1181555/pexels-photo-1181555.jpeg",
-    },
-    {
-      _id: "demo-5",
-      title: "Emergency Personal Loan",
-      category: "Personal",
-      interest: 9.5,
-      maxLimit: 1500,
-      image:
-        "https://images.pexels.com/photos/4968633/pexels-photo-4968633.jpeg",
-    },
-    {
-      _id: "demo-6",
-      title: "Student Support Loan",
-      category: "Student",
-      interest: 5.9,
-      maxLimit: 2500,
-      image:
-        "https://images.pexels.com/photos/1462630/pexels-photo-1462630.jpeg",
-    },
-  ];
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
+
+  // debounce search
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(searchInput.trim().toLowerCase());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
+  const {
+    data: loans = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["loans"],
+    queryFn: fetchLoans,
+    staleTime: 1000 * 60,
+  });
+
+  // ✅ Client-side search
+  const filteredLoans = useMemo(() => {
+    if (!debouncedSearch) return loans;
+    return loans.filter(
+      (l) =>
+        l.title?.toLowerCase().includes(debouncedSearch) ||
+        l.category?.toLowerCase().includes(debouncedSearch)
+    );
+  }, [loans, debouncedSearch]);
+
+  // ✅ Client-side pagination
+  const start = (page - 1) * PAGE_LIMIT;
+  const paginatedLoans = filteredLoans.slice(start, start + PAGE_LIMIT);
+  const isLastPage = start + PAGE_LIMIT >= filteredLoans.length;
 
   return (
-    <div className="bg-base-100">
+    <div className="bg-base-100 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-10 md:py-14">
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-base-content">
-              All Loans
-            </h1>
+            <h1 className="text-2xl md:text-3xl font-bold">All Loans</h1>
             <p className="text-sm text-base-content/70 mt-1 max-w-2xl">
-              Browse all microloan products available in the system. Later, this
-              list will be loaded from MongoDB with filtering, search and
-              pagination.
+              Browse all microloan products available in the system.
             </p>
           </div>
 
-          {/* placeholder for future filter/search */}
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Search by title or category"
-              className="input input-sm md:input-md input-bordered w-full md:w-64"
-              // TODO: hook this to actual search logic later
-            />
-            <button className="btn btn-sm md:btn-md btn-outline">
-              Search
-            </button>
-          </div>
+          {/* Search */}
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search by title or category"
+            className="input input-sm md:input-md input-bordered w-full md:w-64"
+          />
         </div>
 
-        {/* Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {demoLoans.map((loan) => (
-            <div
-              key={loan._id}
-              className="card bg-base-100 border border-base-200 hover:border-primary/50 hover:shadow-md transition"
-            >
-              <figure className="h-40 w-full overflow-hidden">
-                <img
-                  src={loan.image}
-                  alt={loan.title}
-                  className="w-full h-full object-cover"
-                />
-              </figure>
-              <div className="card-body p-4">
-                <h2 className="card-title text-base">{loan.title}</h2>
-                <p className="text-xs text-base-content/70">
-                  Category: <span className="font-medium">{loan.category}</span>
-                </p>
+        {/* States */}
+        {isLoading ? (
+          <div className="text-center py-16">
+            <span className="loading loading-dots text-primary"></span>
+          </div>
+        ) : isError ? (
+          <div className="text-center py-8 text-red-500">
+            {error?.message || "Failed to load loans"}
+          </div>
+        ) : paginatedLoans.length === 0 ? (
+          <div className="text-center py-8 text-base-content/70">
+            No loans found.
+          </div>
+        ) : (
+          <>
+            {/* Grid */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {paginatedLoans.map((loan) => (
+                <div
+                  key={loan._id}
+                  className="card bg-base-100 border border-base-200 hover:shadow-md"
+                >
+                  <figure className="h-40 w-full overflow-hidden">
+                    <img
+                      src={loan.images?.[0] || "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg"}
+                      alt={loan.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </figure>
 
-                <div className="mt-3 flex justify-between text-[11px] text-base-content/80">
-                  <span>Interest: {loan.interest}%</span>
-                  <span>Max: ${loan.maxLimit.toLocaleString()}</span>
-                </div>
+                  <div className="card-body p-4">
+                    <h2 className="card-title text-base">{loan.title}</h2>
+                    <p className="text-xs text-base-content/70">
+                      Category: {loan.category}
+                    </p>
 
-                <div className="card-actions mt-4 justify-end">
-                  <Link
-                    to={`/loan/${loan._id}`} // later use real MongoDB _id
-                    className="btn btn-sm btn-outline"
-                  >
-                    View Details
-                  </Link>
+                    <div className="mt-3 flex justify-between text-[11px]">
+                      <span>Interest: {loan.interest}%</span>
+                      <span>Max: ${Number(loan.maxLimit).toLocaleString()}</span>
+                    </div>
+
+                    <div className="card-actions mt-4 justify-end">
+                      <Link
+                        to={`/loan/${loan._id}`}
+                        className="btn btn-sm btn-outline"
+                      >
+                        View Details
+                      </Link>
+                    </div>
+                  </div>
                 </div>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <div className="flex justify-between items-center mt-8">
+              <span className="text-sm">Page {page}</span>
+              <div className="btn-group">
+                <button
+                  className="btn btn-sm"
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  Prev
+                </button>
+                <button
+                  className="btn btn-sm"
+                  disabled={isLastPage}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next
+                </button>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* TODO: later add pagination controls here */}
+          </>
+        )}
       </div>
     </div>
   );
