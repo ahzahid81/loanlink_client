@@ -6,33 +6,33 @@ const DashboardHome = () => {
 
   return (
     <div>
-      <h1 className="text-2xl md:text-3xl font-bold mb-3">
-        Welcome back, {user?.displayName || "User"} 👋
+      <h1 className="text-2xl md:text-3xl font-bold mb-2">
+        Welcome, {user?.displayName || "User"}
       </h1>
+
       <p className="text-sm text-base-content/70 mb-6">
-        You are logged in as <span className="font-semibold">{role}</span>. Use
-        the sidebar to navigate through your dashboard tools.
+        You are logged in as <strong>{role}</strong>.
       </p>
 
-      <div className="grid md:grid-cols-3 gap-4 text-sm">
-        <div className="p-4 rounded-xl bg-base-200/60">
-          <p className="font-semibold mb-1">Quick Tip</p>
-          <p className="text-base-content/70">
-            Keep your profile up to date so managers and admins can verify your
-            applications faster.
+      <div className="grid gap-6 md:grid-cols-3">
+        <div className="p-5 rounded-xl bg-base-100 border">
+          <h3 className="font-semibold mb-1">Quick Actions</h3>
+          <p className="text-sm text-base-content/70">
+            Use the sidebar to manage your tasks.
           </p>
         </div>
-        <div className="p-4 rounded-xl bg-base-200/60">
-          <p className="font-semibold mb-1">Status</p>
-          <p className="text-base-content/70">
-            This section will later show quick stats relevant to your role.
+
+        <div className="p-5 rounded-xl bg-base-100 border">
+          <h3 className="font-semibold mb-1">Status</h3>
+          <p className="text-sm text-base-content/70">
+            Track loans, applications, and approvals.
           </p>
         </div>
-        <div className="p-4 rounded-xl bg-base-200/60">
-          <p className="font-semibold mb-1">Next Steps</p>
-          <p className="text-base-content/70">
-            Borrowers can review their loans, managers can approve, and admins
-            can manage users and products.
+
+        <div className="p-5 rounded-xl bg-base-100 border">
+          <h3 className="font-semibold mb-1">Security</h3>
+          <p className="text-sm text-base-content/70">
+            Your data is protected with JWT & Firebase.
           </p>
         </div>
       </div>
