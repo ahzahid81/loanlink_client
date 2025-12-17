@@ -20,11 +20,14 @@ import ManagerManageLoans from '../Pages/dashboard/ManagerManageLoans';
 import ManagerPendingLoans from '../Pages/dashboard/ManagerPendingLoans';
 import ManagerApprovedLoans from '../Pages/dashboard/ManagerApprovedLoans';
 import PaymentSuccess from '../Pages/PaymentSuccess';
+import ErrorPage from '../Pages/ErrorPage';
+import About from '../Pages/About';
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <MainLayout></MainLayout>,
+        errorElement: <ErrorPage></ErrorPage>,
         children: [{
             path: "/",
             element: <Home></Home>
@@ -48,6 +51,10 @@ const router = createBrowserRouter([
         {
             path: "/apply/:id",
             element: <PrivateRoute><ApplyLoan></ApplyLoan></PrivateRoute>,
+        },
+        {
+            path: "/about",
+            element: <About></About>
         },
         {
             path: "/payment-success/:id",
