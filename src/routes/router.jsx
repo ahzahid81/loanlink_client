@@ -22,6 +22,7 @@ import ManagerApprovedLoans from '../Pages/dashboard/ManagerApprovedLoans';
 import PaymentSuccess from '../Pages/PaymentSuccess';
 import ErrorPage from '../Pages/ErrorPage';
 import About from '../Pages/About';
+import Contact from '../Pages/Contact';
 
 const router = createBrowserRouter([
     {
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
         {
             path: "/about",
             element: <About></About>
+        },
+        {
+            path: "/contact",
+            element: <Contact></Contact>
         },
         {
             path: "/payment-success/:id",

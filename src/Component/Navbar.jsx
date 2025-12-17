@@ -26,8 +26,8 @@ const Navbar = () => {
     <>
       <li><NavLink to="/">Home</NavLink></li>
       <li><NavLink to="/all-loans">All Loans</NavLink></li>
-      <li><NavLink to="/about">About</NavLink></li>
-      <li><NavLink to="/contact">Contact</NavLink></li>
+      {!user && <li><NavLink to="/about">About Us</NavLink></li>}
+      {!user && <li><NavLink to="/contact">Contact</NavLink></li>}
       {user && <li><NavLink to="/dashboard">Dashboard</NavLink></li>}
     </>
   );
@@ -64,13 +64,7 @@ const Navbar = () => {
 
         {/* RIGHT SIDE */}
         <div className="navbar-end space-x-3">
-          {/* THEME TOGGLE */}
-          <button
-            onClick={toggleTheme}
-            className="btn btn-circle bg-white text-black hover:bg-yellow-300"
-          >
-            {theme === 'light' ? <FaMoon /> : <FaSun />}
-          </button>
+
 
           {/* AUTH AREA */}
           {loading ? (
@@ -82,12 +76,10 @@ const Navbar = () => {
                 className="btn btn-ghost btn-circle avatar"
               >
                 <div className="w-10 h-10 rounded-full ring ring-yellow-400 ring-offset-base-100 ring-offset-2 overflow-hidden">
-                  {/* 🔍 Debug log – keep commented unless you need to debug */}
-                  {/* console.log('photoURL ->', user?.photoURL) */}
+
 
                   <img
-                    // if google photoURL exists AND has not failed, use it
-                    // otherwise use your fallback avatar image
+
                     src={
                       !imgError && user?.photoURL
                         ? user.photoURL
@@ -96,7 +88,6 @@ const Navbar = () => {
                     alt="avatar"
                     className="w-full h-full object-cover"
                     onError={() => {
-                      // if google image fails to load, use fallback next render
                       setImgError(true);
                     }}
                   />
@@ -139,8 +130,22 @@ const Navbar = () => {
               >
                 Register
               </NavLink>
+              <button
+                onClick={toggleTheme}
+                className="btn btn-circle bg-white text-black hover:bg-yellow-300"
+              >
+                {theme === 'light' ? <FaMoon /> : <FaSun />}
+              </button>
             </>
           )}
+          {
+            user && <button onClick={logoutUser}
+            className="btn btn-outline text-white border-white hover:bg-white hover:text-black"
+          >
+            Logout
+          </button>
+          }
+          
         </div>
       </div>
     </div>
