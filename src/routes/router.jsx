@@ -19,6 +19,7 @@ import ManagerAddLoan from '../Pages/dashboard/ManagerAddLoan';
 import ManagerManageLoans from '../Pages/dashboard/ManagerManageLoans';
 import ManagerPendingLoans from '../Pages/dashboard/ManagerPendingLoans';
 import ManagerApprovedLoans from '../Pages/dashboard/ManagerApprovedLoans';
+import PaymentSuccess from '../Pages/PaymentSuccess';
 
 const router = createBrowserRouter([
     {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
         {
             path: "/apply/:id",
             element: <PrivateRoute><ApplyLoan></ApplyLoan></PrivateRoute>,
+        },
+        {
+            path: "/payment-success/:id",
+            element: <PaymentSuccess></PaymentSuccess>
         },
         {
             path: "/dashboard",
