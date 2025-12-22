@@ -2,13 +2,6 @@ import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-/**
- * Dashboard Layout (Assignment Correct)
- * - Role based sidebar
- * - Proper active link handling (NavLink + end)
- * - Sticky sidebar
- * - Clean UX spacing
- */
 
 const DashboardLayout = () => {
   const { role, user } = useAuth();

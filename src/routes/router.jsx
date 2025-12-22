@@ -19,10 +19,11 @@ import ManagerAddLoan from '../Pages/dashboard/ManagerAddLoan';
 import ManagerManageLoans from '../Pages/dashboard/ManagerManageLoans';
 import ManagerPendingLoans from '../Pages/dashboard/ManagerPendingLoans';
 import ManagerApprovedLoans from '../Pages/dashboard/ManagerApprovedLoans';
-import PaymentSuccess from '../Pages/PaymentSuccess';
 import ErrorPage from '../Pages/ErrorPage';
 import About from '../Pages/About';
 import Contact from '../Pages/Contact';
+import PaymentSuccess from '../Pages/payments/PaymentSuccess';
+import PaymentCancel from '../Pages/payments/PaymentCancel';
 
 const router = createBrowserRouter([
     {
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
         {
             path: "/payment-success/:id",
             element: <PaymentSuccess></PaymentSuccess>
+        },
+        {
+            path: "/payment/cancel",
+            element: <PaymentCancel></PaymentCancel>
         },
         {
             path: "/dashboard",

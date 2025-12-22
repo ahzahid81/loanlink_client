@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosSecure from "../../services/axiosSecure";
 import Swal from "sweetalert2";
 import { useForm, useFieldArray } from "react-hook-form";
+import PageTitle from "../../Component/PageTitle";
 
 const AdminAllLoans = () => {
   const [loans, setLoans] = useState([]);
@@ -119,6 +120,7 @@ const AdminAllLoans = () => {
 
   return (
     <div>
+      <PageTitle title={"All Loan"}></PageTitle>
       <h2 className="text-xl md:text-2xl font-bold mb-4">
         All Loans (Admin)
       </h2>

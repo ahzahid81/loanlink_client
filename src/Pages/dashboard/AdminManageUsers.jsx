@@ -1,20 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axiosSecure from "../../services/axiosSecure";
 import Swal from "sweetalert2";
+import PageTitle from "../../Component/PageTitle";
 
-/**
- * AdminManageUsers
- * - GET /users
- * - PATCH /users/:id
- * Business rules:
- *  - Admin role cannot be changed
- *  - Suspended users cannot change role
- *  - Suspended users cannot be suspended again
- */
 
 const AdminManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   // Load users
   useEffect(() => {
@@ -23,24 +16,30 @@ const AdminManageUsers = () => {
         const res = await axiosSecure.get("/users");
         setUsers(res.data || []);
       } catch (err) {
-        console.error("Failed to load users", err);
+        console.error(err);
         Swal.fire("Error", "Failed to load users", "error");
       } finally {
         setLoading(false);
       }
     };
-
     loadUsers();
   }, []);
 
-  // Change Role
+  // Search filter (name/email)
+  const filteredUsers = useMemo(() => {
+    if (!search.trim()) return users;
+    const q = search.toLowerCase();
+    return users.filter(
+      (u) =>
+        u.email?.toLowerCase().includes(q) ||
+        u.name?.toLowerCase().includes(q)
+    );
+  }, [users, search]);
+
+  // Change role
   const handleChangeRole = async (user) => {
     if (user.role === "admin") {
-      return Swal.fire(
-        "Not Allowed",
-        "Admin role cannot be changed",
-        "warning"
-      );
+      return Swal.fire("Not Allowed", "Admin role cannot be changed", "warning");
     }
 
     if (user.status === "suspended") {
@@ -58,7 +57,7 @@ const AdminManageUsers = () => {
       text: `Change ${user.email} to ${newRole}?`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, change",
+      confirmButtonText: "Yes, Change",
     });
 
     if (!confirm.isConfirmed) return;
@@ -72,13 +71,13 @@ const AdminManageUsers = () => {
         )
       );
 
-      Swal.fire("Updated", "User role updated successfully", "success");
-    } catch (err) {
+      Swal.fire("Updated", "User role updated", "success");
+    } catch {
       Swal.fire("Failed", "Could not update role", "error");
     }
   };
 
-  // Suspend User
+  // Suspend user
   const handleSuspend = async (user) => {
     if (user.status === "suspended") return;
 
@@ -108,14 +107,46 @@ const AdminManageUsers = () => {
       );
 
       Swal.fire("Suspended", "User has been suspended", "success");
-    } catch (err) {
+    } catch {
       Swal.fire("Failed", "Could not suspend user", "error");
+    }
+  };
+
+  // Unsuspend user (extra polish)
+  const handleUnsuspend = async (user) => {
+    const confirm = await Swal.fire({
+      title: "Unsuspend User?",
+      text: user.email,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Unsuspend",
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await axiosSecure.patch(`/users/${user._id}`, {
+        status: "active",
+        suspendReason: "",
+      });
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u._id === user._id
+            ? { ...u, status: "active", suspendReason: "" }
+            : u
+        )
+      );
+
+      Swal.fire("Success", "User unsuspended", "success");
+    } catch {
+      Swal.fire("Failed", "Could not unsuspend user", "error");
     }
   };
 
   if (loading) {
     return (
-      <div className="text-center py-10">
+      <div className="text-center py-12">
         <span className="loading loading-spinner loading-lg" />
       </div>
     );
@@ -123,7 +154,17 @@ const AdminManageUsers = () => {
 
   return (
     <div>
+      <PageTitle title={"Manage User"}></PageTitle>
       <h2 className="text-xl md:text-2xl font-bold mb-4">Manage Users</h2>
+
+      {/* Search */}
+      <input
+        type="text"
+        placeholder="Search by name or email"
+        className="input input-bordered input-sm mb-4 w-full md:w-72"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
       <div className="overflow-x-auto">
         <table className="table w-full">
@@ -139,7 +180,7 @@ const AdminManageUsers = () => {
           </thead>
 
           <tbody>
-            {users.map((user, index) => (
+            {filteredUsers.map((user, index) => (
               <tr key={user._id}>
                 <td>{index + 1}</td>
                 <td>{user.name || "N/A"}</td>
@@ -181,18 +222,35 @@ const AdminManageUsers = () => {
                   </button>
 
                   {/* Suspend */}
-                  <button
-                    className="btn btn-xs btn-error"
-                    disabled={user.status === "suspended"}
-                    onClick={() => handleSuspend(user)}
-                  >
-                    Suspend
-                  </button>
+                  {user.status === "active" && (
+                    <button
+                      className="btn btn-xs btn-error"
+                      onClick={() => handleSuspend(user)}
+                    >
+                      Suspend
+                    </button>
+                  )}
+
+                  {/* Unsuspend */}
+                  {user.status === "suspended" && (
+                    <button
+                      className="btn btn-xs btn-success"
+                      onClick={() => handleUnsuspend(user)}
+                    >
+                      Unsuspend
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+
+        {filteredUsers.length === 0 && (
+          <p className="text-sm text-center py-6 text-base-content/60">
+            No users found.
+          </p>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import axiosSecure from "../services/axiosSecure";
 import Swal from "sweetalert2";
+import PageTitle from "../Component/PageTitle";
 
 const fetchLoan = async (id) => {
   const res = await axiosSecure.get(`/loans/${id}`);
@@ -104,6 +105,7 @@ const ApplyLoan = () => {
 
   return (
     <div className="bg-base-100">
+      <PageTitle title={"Apply Loan"}></PageTitle>
       <div className="max-w-3xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold mb-6">
           Apply for: <span className="text-primary">{loan.title}</span>

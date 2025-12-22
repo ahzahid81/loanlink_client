@@ -4,6 +4,7 @@ import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import axiosSecure from "../services/axiosSecure";
+import PageTitle from "../Component/PageTitle";
 
 const fetchLoanById = async (id) => {
   const res = await axiosSecure.get(`/loans/${id}`);
@@ -68,6 +69,7 @@ const LoanDetails = () => {
 
   return (
     <div className="bg-base-100">
+      <PageTitle title={"Loan Details"}></PageTitle>
       <div className="max-w-7xl mx-auto px-4 py-10 md:py-14">
         {/* Back */}
         <div className="mb-4 text-sm">

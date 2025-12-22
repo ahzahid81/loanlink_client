@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import axiosSecure from '../services/axiosSecure';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import PageTitle from '../Component/PageTitle';
 
 const Register = () => {
     const [error, setError] = useState("");
@@ -61,6 +62,7 @@ const Register = () => {
 
     return (
         <div>
+            <PageTitle title={"Register"}></PageTitle>
             <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">
                 <div className="w-full max-w-md bg-base-100 p-8 rounded-xl shadow-lg">
                     <h2 className="text-3xl font-bold text-center mb-6">Create Account</h2>

@@ -1,6 +1,7 @@
 import React from "react";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
+import PageTitle from "../Component/PageTitle";
 
 const Contact = () => {
     const handleSubmit = (e) => {
@@ -18,6 +19,7 @@ const Contact = () => {
 
     return (
         <div className="bg-base-100 min-h-screen">
+            <PageTitle title={"Contact"}></PageTitle>
             {/* HERO */}
             <section className="border-b border-base-200 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
                 <div className="max-w-7xl mx-auto px-4 py-14 md:py-20">

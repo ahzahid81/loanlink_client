@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axiosSecure from "../services/axiosSecure";
+import PageTitle from "../Component/PageTitle";
 
 const PAGE_LIMIT = 9;
 
@@ -54,6 +55,7 @@ const AllLoans = () => {
 
   return (
     <div className="bg-base-100 min-h-screen">
+      <PageTitle title={"All Loan"}></PageTitle>
       <div className="max-w-7xl mx-auto px-4 py-10 md:py-14">
 
         {/* Header */}

@@ -4,6 +4,7 @@ import axiosSecure from "../../services/axiosSecure";
 import { useAuth } from "../../context/AuthContext";
 import Swal from "sweetalert2";
 import imageCompression from "browser-image-compression";
+import PageTitle from "../../Component/PageTitle";
 
 
 const IMGBB_KEY = import.meta.env.VITE_IMGBB_API_KEY;
@@ -155,6 +156,7 @@ const ManagerAddLoan = () => {
 
   return (
     <div>
+      <PageTitle title={"Add Loan"}></PageTitle>
       <h2 className="text-xl md:text-2xl font-bold mb-3">Add Loan</h2>
       
 

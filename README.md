@@ -1,16 +1,99 @@
-# React + Vite
+# 📘 LoanLink – Microloan Request & Approval Tracker System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🧠 Project Overview
 
-Currently, two official plugins are available:
+LoanLink is a full-stack microloan request, review, and approval management system.  
+It is designed to help microfinance organizations, NGOs, and small lenders manage loan applications, approvals, payments, and dashboards in one centralized platform.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🎯 Key Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🌐 Public Features
+- Modern landing page with Framer Motion animations
+- Home page with featured loans from MongoDB
+- All Loans page with search and pagination
+- Loan Details page
+- Responsive UI (mobile, tablet, desktop)
+- Dark / Light theme toggle
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🔐 Authentication & Security
+- Firebase authentication (Email/Password + Google)
+- JWT-based authorization (stored in cookies)
+- Role-based private routes (Admin, Manager, Borrower)
+- Secure environment variables
+- Protected backend APIs
+
+---
+
+### 👤 Borrower Features
+- Apply for loans (auto-filled information)
+- View applied loans
+- Cancel pending loan applications
+- Stripe payment for application fee ($10)
+- Payment success & cancel pages
+- Payment details modal (Transaction ID, Email, Loan ID)
+- Borrower dashboard with charts
+
+---
+
+### 🧑‍💼 Manager Features
+- Add loan products
+- Manage own loans
+- View pending loan applications
+- Approve or reject applications
+- View approved loans
+- Dashboard analytics
+
+---
+
+### 🛡 Admin Features
+- Manage users (change role, suspend with reason)
+- View all loans
+- Edit and delete loan products
+- Toggle “Show on Home” loans
+- View all loan applications
+- Filter applications by status
+- Admin dashboard with charts
+
+---
+
+## 📊 Dashboard Highlights
+- Total loans count
+- Pending, approved, rejected applications
+- Monthly loan application bar chart
+- Application status pie chart
+
+---
+
+## 💳 Stripe Payment Integration
+- Fixed $10 application fee
+- Secure Stripe Checkout
+- Payment success updates database
+- Payment history stored and displayed
+- Paid badge opens payment details modal
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+- React (Vite)
+- React Router DOM
+- Tailwind CSS + DaisyUI
+- TanStack Query
+- React Hook Form
+- Framer Motion
+- SweetAlert2
+- Recharts
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- JWT Authentication
+- Stripe API
+- Cookie Parser
+- CORS

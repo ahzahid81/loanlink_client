@@ -4,6 +4,7 @@ import axiosSecure from "../../services/axiosSecure";
 import { useQuery } from '@tanstack/react-query';
 import Swal from "sweetalert2";
 import EditLoanModal from "../../Component/modals/EditLoanModal";
+import PageTitle from "../../Component/PageTitle";
 
 
 const fetchManagerLoans = async (email) => {
@@ -61,6 +62,7 @@ const ManagerManageLoans = () => {
 
   return (
     <div className="bg-base-100 p-4 rounded-xl">
+      <PageTitle title={"Manage Loan"}></PageTitle>
       <h2 className="text-xl md:text-2xl font-bold mb-3">Manage Loans</h2>
       <p className="text-sm text-base-content/70 mb-4">List loans created by this manager, with edit/delete.</p>
 

@@ -1,9 +1,11 @@
 import React from "react";
 import { FaUsers, FaMoneyCheckAlt, FaUserShield } from "react-icons/fa";
+import PageTitle from "../Component/PageTitle";
 
 const About = () => {
   return (
     <div className="bg-base-100">
+      <PageTitle title={"About"}></PageTitle>
       <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
         {/* HEADER */}
         <div className="text-center mb-12">

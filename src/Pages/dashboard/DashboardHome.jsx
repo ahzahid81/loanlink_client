@@ -1,5 +1,6 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext";
+import DashboardOverview from "./DashboardOverview";
 
 const DashboardHome = () => {
   const { user, role } = useAuth();
@@ -13,6 +14,8 @@ const DashboardHome = () => {
       <p className="text-sm text-base-content/70 mb-6">
         You are logged in as <strong>{role}</strong>.
       </p>
+
+      <DashboardOverview></DashboardOverview>
 
       <div className="grid gap-6 md:grid-cols-3">
         <div className="p-5 rounded-xl bg-base-100 border">

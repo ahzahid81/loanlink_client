@@ -1,11 +1,13 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext";
+import PageTitle from "../../Component/PageTitle";
 
 const DashboardProfile = () => {
   const { user, role, logoutUser } = useAuth();
 
   return (
     <div>
+      <PageTitle title={"Profile"}></PageTitle>
       <h2 className="text-2xl font-bold mb-4">My Profile</h2>
 
       <div className="grid md:grid-cols-[160px,1fr] gap-6 items-start">

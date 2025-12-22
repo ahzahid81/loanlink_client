@@ -1,64 +1,96 @@
-import React, { useEffect, useState } from "react";
+// src/pages/admin/AdminLoanApplications.jsx
+import React, { useEffect, useMemo, useState } from "react";
 import axiosSecure from "../../services/axiosSecure";
 import Swal from "sweetalert2";
+import PageTitle from "../../Component/PageTitle";
 
-/**
- * AdminLoanApplications
- * - Admin can view ALL loan applications
- * - Filter by status
- * - View full application details
- */
+const PAGE_SIZE = 8;
 
 const AdminLoanApplications = () => {
   const [applications, setApplications] = useState([]);
-  const [filtered, setFiltered] = useState([]);
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [status, setStatus] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   // Load all applications
   useEffect(() => {
-    const load = async () => {
+    const loadApplications = async () => {
       try {
         const res = await axiosSecure.get("/applications");
         setApplications(res.data || []);
-        setFiltered(res.data || []);
-      } catch (err) {
+      } catch {
         Swal.fire("Error", "Failed to load applications", "error");
       } finally {
         setLoading(false);
       }
     };
-    load();
+    loadApplications();
   }, []);
 
-  // Filter by status
-  useEffect(() => {
-    if (statusFilter === "All") {
-      setFiltered(applications);
-    } else {
-      setFiltered(applications.filter(a => a.status === statusFilter));
-    }
-  }, [statusFilter, applications]);
+  // Filtered applications
+  const filtered = useMemo(() => {
+    if (status === "All") return applications;
+    return applications.filter((app) => app.status === status);
+  }, [applications, status]);
 
-  const viewDetails = (app) => {
+  // Pagination
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginatedApps = filtered.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
+
+  // View details
+  const viewApplication = (app) => {
     Swal.fire({
-      title: "Application Details",
-      width: 700,
+      title: "Loan Application Details",
+      width: 650,
       html: `
-        <div style="text-align:left">
-          <p><b>Applicant:</b> ${app.applicantName || "N/A"}</p>
-          <p><b>Email:</b> ${app.userEmail}</p>
-          <p><b>Loan:</b> ${app.loanTitle}</p>
+        <div style="text-align:left;font-size:14px">
+          <p><b>Loan ID:</b> ${app.loanId}</p>
+          <p><b>Loan Title:</b> ${app.loanTitle}</p>
           <p><b>Amount:</b> $${app.loanAmount}</p>
+          <hr/>
+          <p><b>Applicant:</b> ${app.applicantName}</p>
+          <p><b>Email:</b> ${app.userEmail}</p>
+          <p><b>Contact:</b> ${app.contact}</p>
+          <p><b>NID:</b> ${app.nid}</p>
+          <hr/>
           <p><b>Status:</b> ${app.status}</p>
           <p><b>Fee Status:</b> ${app.applicationFeeStatus}</p>
-          <p><b>Income:</b> ${app.monthlyIncome}</p>
-          <p><b>Reason:</b> ${app.reason}</p>
-          <p><b>Address:</b> ${app.address}</p>
+          <p><b>Applied At:</b> ${new Date(app.createdAt).toLocaleString()}</p>
         </div>
       `,
-      confirmButtonText: "Close",
     });
+  };
+
+  // Approve / Reject
+  const updateStatus = async (app, newStatus) => {
+    const confirm = await Swal.fire({
+      title: `${newStatus} Application?`,
+      text: app.loanTitle,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await axiosSecure.patch(`/applications/${app._id}/status`, {
+        status: newStatus,
+      });
+
+      setApplications((prev) =>
+        prev.map((a) =>
+          a._id === app._id ? { ...a, status: newStatus } : a
+        )
+      );
+
+      Swal.fire("Updated", `Application ${newStatus}`, "success");
+    } catch {
+      Swal.fire("Error", "Failed to update status", "error");
+    }
   };
 
   if (loading) {
@@ -71,27 +103,25 @@ const AdminLoanApplications = () => {
 
   return (
     <div>
-      <h2 className="text-xl md:text-2xl font-bold mb-3">
+      <PageTitle title={"Loan Application"}></PageTitle>
+      <h2 className="text-xl md:text-2xl font-bold mb-4">
         Loan Applications (Admin)
       </h2>
 
-      <p className="text-sm text-base-content/70 mb-4">
-        View and monitor all loan applications in the system.
-      </p>
-
       {/* FILTER */}
-      <div className="mb-4 flex gap-2 items-center">
-        <span className="text-sm">Filter:</span>
+      <div className="flex gap-3 mb-4">
         <select
-          className="select select-sm select-bordered"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          className="select select-bordered select-sm"
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
         >
-          <option>All</option>
-          <option>Pending</option>
-          <option>Approved</option>
-          <option>Rejected</option>
-          <option>Cancelled</option>
+          <option value="All">All</option>
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
         </select>
       </div>
 
@@ -100,9 +130,8 @@ const AdminLoanApplications = () => {
         <table className="table w-full">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Applicant</th>
-              <th>Loan</th>
+              <th>Loan ID</th>
+              <th>User</th>
               <th>Amount</th>
               <th>Status</th>
               <th>Fee</th>
@@ -111,53 +140,95 @@ const AdminLoanApplications = () => {
           </thead>
 
           <tbody>
-            {filtered.map((app, i) => (
+            {paginatedApps.map((app) => (
               <tr key={app._id}>
-                <td>{i + 1}</td>
-                <td>{app.applicantName || "N/A"}</td>
-                <td>{app.loanTitle}</td>
+                <td className="text-xs">{app.loanId}</td>
+                <td>
+                  <p className="font-semibold">{app.applicantName}</p>
+                  <p className="text-xs text-base-content/60">
+                    {app.userEmail}
+                  </p>
+                </td>
                 <td>${Number(app.loanAmount).toLocaleString()}</td>
                 <td>
-                  <span
-                    className={`badge ${
-                      app.status === "Pending"
-                        ? "badge-warning"
-                        : app.status === "Approved"
-                        ? "badge-success"
-                        : app.status === "Rejected"
-                        ? "badge-error"
-                        : ""
-                    }`}
-                  >
-                    {app.status}
-                  </span>
+                  {app.status === "Pending" && (
+                    <span className="badge badge-warning">Pending</span>
+                  )}
+                  {app.status === "Approved" && (
+                    <span className="badge badge-success">Approved</span>
+                  )}
+                  {app.status === "Rejected" && (
+                    <span className="badge badge-error">Rejected</span>
+                  )}
                 </td>
                 <td>
                   {app.applicationFeeStatus === "Paid" ? (
                     <span className="badge badge-success">Paid</span>
                   ) : (
-                    <span className="badge">Unpaid</span>
+                    <span className="badge badge-outline">Unpaid</span>
                   )}
                 </td>
-                <td>
+                <td className="space-x-2">
                   <button
                     className="btn btn-xs btn-outline"
-                    onClick={() => viewDetails(app)}
+                    onClick={() => viewApplication(app)}
                   >
                     View
                   </button>
+
+                  {app.status === "Pending" && (
+                    <>
+                      <button
+                        className="btn btn-xs btn-success"
+                        onClick={() => updateStatus(app, "Approved")}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        className="btn btn-xs btn-error"
+                        onClick={() => updateStatus(app, "Rejected")}
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
+
+            {!paginatedApps.length && (
+              <tr>
+                <td colSpan="6" className="text-center text-sm text-base-content/60">
+                  No applications found
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-
-        {filtered.length === 0 && (
-          <p className="text-center text-sm text-base-content/70 py-6">
-            No applications found.
-          </p>
-        )}
       </div>
+
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <div className="flex justify-end mt-4 gap-2">
+          <button
+            className="btn btn-xs"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Prev
+          </button>
+          <span className="text-sm px-2">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            className="btn btn-xs"
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };
